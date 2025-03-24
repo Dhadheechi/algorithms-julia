@@ -26,7 +26,7 @@ function choosefest(A, i) # choose the days starting from the ith day
 		return max(A[i], A[i+1])
 	else 
 		take = A[i] + choosefest(A, i+2) # take i and skip i+1
-		skip = choosefest(A, i+1) # don't take i+1 at all; 
+		skip = choosefest(A, i+1) # don't take i at all; 
 		choice = max(take, skip)
 		return choice
 	end		
@@ -69,20 +69,23 @@ fastchoosefest([1, 100, 1, 1, 100, 1, 1, 100, 1, 1, 100])
 
 # ╔═╡ 189cf6dc-04f0-496d-9fbc-4504d862d011
 begin
-   X = "bhuvanchandrakodavatikanti"
-   Y = "bhavanamsathvikreddy"
+   X = "bhuvanchandra"
+   Y = "bhavanamsathvik"
 end
 
 # ╔═╡ bc692f08-6d41-40a3-802d-99475daaf74b
-function lcs_bt(i,j) # length of lcs of the sequences a_i and b_j
+function lcs_bt(X,Y,i,j) # length of lcs of the sequences a_i and b_j
 	if i == 0 || j ==0
 		return 0
 	elseif X[i] == Y[j] # if the last two elements are the same, recurse for the remaining part
-		return lcs_bt(i-1, j-1) +1
+		return lcs_bt(X,Y, i-1, j-1) +1
 	else
-		return max(lcs_bt(i-1, j), lcs_bt(i, j-1))
+		return max(lcs_bt(X,Y,i-1, j), lcs_bt(X,Y,i, j-1))
 	end
 end
+
+# ╔═╡ 25c5a911-c389-48f9-abeb-8b1b4cf51ede
+@time lcs_bt(X, Y, length(X), length(Y))
 
 # ╔═╡ dac8eec2-8fb4-49db-a056-1e51d0f146f3
 function lcs_length(a, b)
@@ -92,7 +95,7 @@ function lcs_length(a, b)
 	for j in 1:n+1
 		c[1, j] = 0
 	end
-	for i in 2:m+1
+	for i in 2:m+1 # this loops over c, so we have to decrease the index for a, b
 		c[i,1] = 0
 		for j in 2:n+1
 			if a[i-1] == b[j-1] # c[i,j] corresponds to lcs of X_i-1 and Y_j-1
@@ -110,11 +113,11 @@ end
 @time lcs_length(X,Y)
 
 # ╔═╡ 1f6ccbf1-b550-4865-8659-310c5617e9f9
-function lcs(a, b)
+function lcs(a,b)
 	m = length(a)
 	n = length(b)
 	c = zeros(m+1, n+1)
-	d = fill('\\', m, n)
+	d = fill('\\', m, n) # indicates the direction
 	for j in 1:n+1
 		c[1, j] = 0
 	end
@@ -127,7 +130,7 @@ function lcs(a, b)
 			elseif c[i,j-1] >= c[i-1,j] # the recursive subproblem is to the left
 				c[i,j] = c[i,j-1]
 				d[i-1,j-1] = '-' 
-			else
+			else # the recursive subproblem is to the top
 				c[i,j] = c[i-1,j]
 				d[i-1,j-1] = '|' # to the top
 			end
@@ -139,6 +142,9 @@ end
 
 # ╔═╡ 17bb4a83-fcfe-4460-b6b7-00a307e4fb66
 @time len, b = lcs(X,Y)
+
+# ╔═╡ 344ddacd-e501-485b-8674-8713b7af9a4c
+b
 
 # ╔═╡ eb0b2d2a-6323-4100-8ba4-569e640a5efd
 function print_lcs(b, X, i, j) #print the lcs of X_i and Y_j
@@ -386,10 +392,12 @@ end
 # ╠═4be9b3c5-c48b-4d42-92a9-9cbb6f5e5ec9
 # ╠═189cf6dc-04f0-496d-9fbc-4504d862d011
 # ╠═bc692f08-6d41-40a3-802d-99475daaf74b
+# ╠═25c5a911-c389-48f9-abeb-8b1b4cf51ede
 # ╠═dac8eec2-8fb4-49db-a056-1e51d0f146f3
 # ╠═a2592410-954c-4af1-acba-90d9e7d7cc07
 # ╠═1f6ccbf1-b550-4865-8659-310c5617e9f9
 # ╠═17bb4a83-fcfe-4460-b6b7-00a307e4fb66
+# ╠═344ddacd-e501-485b-8674-8713b7af9a4c
 # ╠═eb0b2d2a-6323-4100-8ba4-569e640a5efd
 # ╠═f1ddfb73-e168-454b-884d-c5fed19e6643
 # ╠═bb578e9e-3d74-4a06-85e0-4e3ebbdaccb3
